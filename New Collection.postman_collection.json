@@ -1,0 +1,169 @@
+{
+	"info": {
+		"_postman_id": "c737db2d-c20d-4cf3-811a-bab616f58e92",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22988210"
+	},
+	"item": [
+		{
+			"name": "tik_tik_india_api",
+			"item": [
+				{
+					"name": "http://localhost:3000/signup/user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"firstname\":\"riya\",\r\n        \"lastname\":\"kutti\",\r\n        \"email\":\"riya@gmail.com\",\r\n        \"phone\":\"123123123\",\r\n        \"username\":\"kutti01\",\r\n        \"password\":\"kuttiriya111\"\r\n    }\r\n]"
+						},
+						"url": {
+							"raw": "http://localhost:3000/signup/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"signup",
+								"user"
+							]
+						},
+						"description": "this api will sign a new user "
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/get/all/users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/user/with/id/14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"user",
+								"with",
+								"id",
+								"14"
+							]
+						},
+						"description": "this api will show all users available in db"
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/user/with/id/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/user/with/id/14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"user",
+								"with",
+								"id",
+								"14"
+							]
+						},
+						"description": "this api will show particular user details "
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/update/users/14",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"firstname\": \"nishu\",\r\n        \"lastname\": \"pandit\",\r\n        \"email\": \"nisha489@gmail.com\",\r\n        \"phone\": \"12312\",\r\n        \"username\": \"nisha01\",\r\n        \"password\": \"23312asdas\"\r\n    }\r\n]"
+						},
+						"url": {
+							"raw": "http://localhost:3000/update/users/14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"update",
+								"users",
+								"14"
+							]
+						},
+						"description": "This api will update particular user"
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/delete/users/:id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"firstname\": \"nishu\",\r\n        \"lastname\": \"pandit\",\r\n        \"email\": \"nisha489@gmail.com\",\r\n        \"phone\": \"12312\",\r\n        \"username\": \"nisha01\",\r\n        \"password\": \"23312asdas\"\r\n    }\r\n]"
+						},
+						"url": {
+							"raw": "http://localhost:3000/delete/users/13",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"delete",
+								"users",
+								"13"
+							]
+						},
+						"description": "This api will delete particular user data"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:3000/upload/profile/pic",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "upload",
+									"type": "file",
+									"src": "/C:/Users/rahul nirllanjjan/Documents/pic.jpeg"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/upload/profile/pic",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"upload",
+								"profile",
+								"pic"
+							]
+						},
+						"description": "This api is used for uploading profile pic of the user"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
