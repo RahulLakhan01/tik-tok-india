@@ -26,7 +26,7 @@ const client = new Client({
 
 client.connect(function (err) {
   if (err) throw err;
-  console.log("Database Connected!");
+  console.log("Database is Connected!");
 });
 
 
