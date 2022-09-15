@@ -4,21 +4,18 @@ const app = express();
 const bodyParser = require("body-parser");
 const path = require("path");
 const port = process.env.PORT || 3000; //process.ENV file data
-const db = require("./routes/routes"); //Routes file
+const db = require("./routes"); //Routes file
+const client = require("./routes");
 const multer = require("multer");
+const { constants } = require("buffer");
+const req = require("express/lib/request");
 
-// View Engine Setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
 
-const upload = multer({
-  dest: "images",
-});
 
-//Api to upload profile pic
-app.post("/upload/profile/pic", upload.single("upload"), (req, res) => {
-  res.send("Profile pic uploaded");
-});
+
+
+
+
 
 //JSON body parser
 app.use(bodyParser.json());
@@ -28,24 +25,89 @@ app.use(
   })
 );
 
-//Routes section
-app.get("/get/all/users", db.getUsers); //This api is working with postman
-app.get("/user/with/id/:id", db.getUserById); //This api is working with postman
 
-app.post("/signup/user", db.createUser); //This api is working with postman
-app.post("/select/account/type/withid/:id", db.SelectAccountType);
 
-app.put("/update/users/:id", db.updateUser); //This api is working with postman
-app.delete("/delete/users/:id", db.deleteUser); //This api is working with postman
+
+
+
+// View Engine Setup
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+
+
+
+
+
+//image upload section----
+const upload = multer({
+  dest: "images",
+});
+
+//Api to upload profile pic
+app.post("/signup/user", upload.single("upload"), db.createUser, (req, res) => {
+  //JSON header
+  res.type('json');
+});
+
+
+
+
+
+
+//video upload section
+const videoUpload = multer({
+  dest: "videos", // Destination to store video
+});
+
+//Api to upload videos
+app.post("/upload/video",videoUpload.single("videoUpload"),db.InsertVideo,(req, res) => {
+    //JSON header
+    // res.type('json');
+  }
+);
+
+
+
+
+
+
+
 //Routes section
+app.get("/get/all/users", db.getUsers, () => {
+  res.type('json');
+});
+
+
+app.get("/user/with/id/:id", db.getUserById , () => {
+  res.type('json');
+});
+
+
+app.get("/get/profile", db.GetProfile , () => {
+  res.type('json');
+});
+
+app.put("/update/users/:id", db.updateUser , () => {
+  res.type('json');
+}); 
+
+
+app.delete("/delete/users/:id", db.deleteUser , () => {
+  res.type('json');
+});
+//Routes section
+
+
+
+
+
+
 
 //Using http security to create server
 const server = http.createServer(app);
 
 //Listening to the server
-server.listen(port, function (res , req) {
-
-  res.writeHead(200,{'content-type':'text/html'});
-
+server.listen(port, function (res, req) {
   console.log("App listening at port http 3000");
 });
