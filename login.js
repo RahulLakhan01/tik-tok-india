@@ -29,7 +29,3 @@ const LoginCheck = (request, response) => {
     }
   );
 }; //Function end----->>
-
-module.exports = {
-  LoginCheck,
-};
