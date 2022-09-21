@@ -194,14 +194,33 @@ const deleteUser = (request, response) => {
 const GetProfile = (req, res) => {
   const id = req.params.id;
 
-  client.query(`SELECT profile FROM sign_up`, (error, results) => {
+  client.query(`SELECT profile FROM sign_up WHERE id = ${id}`, (error, results) => {
     if (error) {
       throw error;
     }
 
-    res.status(200).send(results);
+    res.status(200).send(results.rows);
     console.log(id);
-    // console.log(ExtImage);
+    console.log(results.rows);
+  });
+};
+
+
+
+
+
+
+const GetVideo = (req, res) => {
+  const id = req.params.id;
+
+  client.query(`SELECT media_data.video FROM media_data JOIN sign_up ON sign_up.first_name WHERE id = ${id}`, (error, results) => {
+    if (error) {
+      throw error;
+    }
+
+    res.status(200).send(results.rows);
+    console.log(id);
+    console.log(results.rows);
   });
 };
 
@@ -225,6 +244,7 @@ const InsertVideo = (req , res) => {
       }
 
       res.status(200).send('Video has been uploaded to db');
+      console.log(video);
     }
   );
 };
@@ -234,14 +254,19 @@ const InsertVideo = (req , res) => {
 
 
 
+
+const GetClient = () => {
+    return client;
+}
+
 module.exports = {
   getUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
-  // Profile,
   InsertVideo,
   GetProfile,
-  // GetData
+  GetVideo,
+  GetClient
 };
