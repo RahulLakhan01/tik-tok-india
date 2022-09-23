@@ -5,8 +5,12 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const port = process.env.PORT || 3000; //process.ENV file data
 const db = require("./routes"); //Routes file
-const login = require("./login");
-const client = require("./routes");
+const Login = require('./login');
+
+
+const { GetClient } = require("./routes");
+const client = GetClient();
+
 const multer = require("multer");
 const { constants } = require("buffer");
 const req = require("express/lib/request");
@@ -28,11 +32,6 @@ const upload = multer({
   dest: "images",
 });
 
-//Api to upload profile pic
-app.post("/signup/user", upload.single("upload"), db.createUser, (req, res) => {
-  //JSON header
-  res.type("json");
-});
 
 //video upload section
 const videoUpload = multer({
@@ -75,10 +74,19 @@ app.delete("/delete/users/:id", db.deleteUser, () => {
   res.type("json");
 });
 
-app.post("/login", login.LoginCheck, () => {
+app.post("/login", Login.LoginCheck ,() => {
+  res.type("json");
+});
+
+app.post("/signup/user", upload.single("upload"), db.createUser, () => {
   res.type("json");
 });
 //Routes section
+
+
+
+
+
 
 //Using http security to create server
 const server = http.createServer(app);

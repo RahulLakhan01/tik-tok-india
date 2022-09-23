@@ -8,7 +8,8 @@ const { Client } = require("pg");
 const { stringify } = require("querystring");
 const multer = require("multer");
 const { profile } = require("console");
-
+const {Hash} = require('./hashing');
+const bcrypt = require('bcryptjs');
 
 
 
@@ -87,7 +88,7 @@ const getUserById = (request, response) => {
 //Create a new user account
 const createUser = (request, response) => {
 
-  const {
+  var {
     firstname,
     lastname,
     email,
@@ -98,11 +99,15 @@ const createUser = (request, response) => {
     bio,
   } = request.body;
 
-  const File = request.file.filename;
+  var File = request.files;
+
+  console.log('\n'+'request file name- '+request.file+'\n');
+
+  var hashpass = Hash(password);
 
   client.query(
     "INSERT INTO sign_up ( firstname, lastname, email, phone, username, password, account_type, bio, profile) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
-    [firstname, lastname, email, phone, username, password, account_type, bio, File],
+    [firstname, lastname, email, phone, username, hashpass, account_type, bio, File],
     (error, results) => {
       if (error) {
         throw error;
@@ -114,7 +119,8 @@ const createUser = (request, response) => {
       console.log(email + "\n");
       console.log(phone + "\n");
       console.log(username + "\n");
-      console.log(password + "\n");
+      console.log('hashpass '+hashpass + "\n"); 
+      console.log('user password '+password + "\n");
       console.log(account_type + "\n");
       console.log(bio + "\n");
       console.log(File);
