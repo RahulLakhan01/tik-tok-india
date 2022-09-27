@@ -10,6 +10,7 @@ const multer = require("multer");
 const { profile } = require("console");
 const {Hash} = require('./hashing');
 const bcrypt = require('bcryptjs');
+const SendFileName = require('./index');
 
 
 
@@ -83,12 +84,10 @@ const getUserById = (request, response) => {
 
 
 
-
-
-//Create a new user account
+// Create a new user account
 const createUser = (request, response) => {
 
-  var {
+  const {
     firstname,
     lastname,
     email,
@@ -99,14 +98,12 @@ const createUser = (request, response) => {
     bio,
   } = request.body;
 
-  var File = request.files;
+  const File = request.file.filename;
 
-  console.log('\n'+'request file name- '+request.file+'\n');
-
-  var hashpass = Hash(password);
+  const hashpass = Hash(password);
 
   client.query(
-    "INSERT INTO sign_up ( firstname, lastname, email, phone, username, password, account_type, bio, profile) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
+    "INSERT INTO sign_up (firstname, lastname, email, phone, username, password, account_type, bio, profile) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
     [firstname, lastname, email, phone, username, hashpass, account_type, bio, File],
     (error, results) => {
       if (error) {
@@ -119,8 +116,8 @@ const createUser = (request, response) => {
       console.log(email + "\n");
       console.log(phone + "\n");
       console.log(username + "\n");
-      console.log('hashpass '+hashpass + "\n"); 
-      console.log('user password '+password + "\n");
+      console.log(hashpass + "\n"); 
+      console.log(password + "\n");
       console.log(account_type + "\n");
       console.log(bio + "\n");
       console.log(File);
@@ -216,10 +213,10 @@ const GetProfile = (req, res) => {
 
 
 
-const GetVideo = (req, res) => {
+const GetCompleteProfile = (req, res) => {
   const id = req.params.id;
 
-  client.query(`SELECT media_data.video FROM media_data JOIN sign_up ON sign_up.first_name WHERE id = ${id}`, (error, results) => {
+  client.query(`SELECT * FROM sign_up INNER JOIN media_data ON sign_up.id = media_data.media_id`, (error, results) => {
     if (error) {
       throw error;
     }
@@ -238,12 +235,14 @@ const GetVideo = (req, res) => {
 
 
 //Uploading vidoes into database
-const InsertVideo = (req , res) => {
+const UploadVideo = (request , res) => {
 
-  const video = req.file.filename;
+  const Userid = request.params.id;
 
-  client.query(`INSERT INTO media_data (video) VALUES ($1) RETURNING *`,
-    [video],
+  const video = request.file.filename;
+
+  client.query(`INSERT INTO media_data (media_id ,video) VALUES ($1 , $2) RETURNING *`,
+    [Userid , video],
     (error, results) => {
       if (error) {
         throw error;
@@ -271,8 +270,8 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  InsertVideo,
+  UploadVideo,
   GetProfile,
-  GetVideo,
+  GetCompleteProfile,
   GetClient
 };

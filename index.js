@@ -5,8 +5,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const port = process.env.PORT || 3000; //process.ENV file data
 const db = require("./routes"); //Routes file
-const Login = require('./login');
-
+const Login = require("./login");
 
 const { GetClient } = require("./routes");
 const client = GetClient();
@@ -27,10 +26,11 @@ app.use(
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-//image upload section----
-const upload = multer({
-  dest: "images",
-});
+
+
+
+
+
 
 
 //video upload section
@@ -39,11 +39,7 @@ const videoUpload = multer({
 });
 
 //Api to upload videos
-app.post(
-  "/upload/video",
-  videoUpload.single("videoUpload"),
-  db.InsertVideo,
-  (req, res) => {
+app.post("/upload/video/user/id/:id",videoUpload.single("videoUpload"),db.UploadVideo,() => {
     //JSON header
     res.type("json");
   }
@@ -62,7 +58,7 @@ app.get("/get/profile/id/:id", db.GetProfile, () => {
   res.type("json");
 });
 
-app.get("/get/video/id/:id", db.GetVideo, () => {
+app.get("/get/complete/profile/id/:id", db.GetCompleteProfile, () => {
   res.type("json");
 });
 
@@ -74,15 +70,16 @@ app.delete("/delete/users/:id", db.deleteUser, () => {
   res.type("json");
 });
 
-app.post("/login", Login.LoginCheck ,() => {
+app.post("/login", Login.LoginCheck, () => {
   res.type("json");
 });
 
+//image upload section----
+const upload = multer({});
 app.post("/signup/user", upload.single("upload"), db.createUser, () => {
   res.type("json");
 });
-//Routes section
-
+//Routes section---------
 
 
 
