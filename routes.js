@@ -1,21 +1,21 @@
-const { json } = require("body-parser");
-const bodyParser = require("body-parser");
-const { response } = require("express");
-const req = require("express/lib/request");
-const { request } = require("http");
-const { endianness } = require("os");
+// const { json } = require("body-parser");
+// const bodyParser = require("body-parser");
+// const { response } = require("express");
+// const req = require("express/lib/request");
+// const { request } = require("http");
+// const { endianness } = require("os");
 const { Client } = require("pg");
-const { stringify } = require("querystring");
-const multer = require("multer");
-const { profile } = require("console");
+// const { stringify } = require("querystring");
+// const multer = require("multer");
+// const { profile } = require("console");
 const {Hash} = require('./hashing');
-const bcrypt = require('bcryptjs');
-const SendFileName = require('./index');
+// const bcrypt = require('bcryptjs');
+// const SendFileName = require('./index');
 
 
 
 
-
+//Database connection
 const client = new Client({
   user: "postgres",
   host: "localhost",
@@ -28,7 +28,7 @@ const client = new Client({
 
 
 
-
+//Checking database connection
 client.connect(function (err) {
   if (err) throw err;
   console.log("Database is Connected!");
@@ -41,12 +41,9 @@ client.connect(function (err) {
 
 
 
-//Get all users details
-const getUsers = (request, response) => {
-  response.set("Content-Type", "json");
-  // => 'application/json'
-
-  client.query("SELECT * FROM sign_up ORDER BY id ASC", (error, results) => {
+//Get recommendations at first sign up
+const WelcomeRecommendation = (request, response) => {
+  client.query("SELECT firstname FROM sign_up ORDER BY id ASC", (error, results) => {
     if (error) {
       throw error;
     }
@@ -61,23 +58,54 @@ const getUsers = (request, response) => {
 
 
 
+//Search page
+const SearchUsers = (request, response) => {
+
+  const SearchFor = request.body.username;
+
+  client.query(`SELECT * FROM sign_up WHERE username LIKE '%${SearchFor}%'`,(error, results) => {
+    
+    try {
+
+      if(results.rows[0].account_type == 'private'){
+        response.send('This account is private');
+      }
+      else{
+        response.status(200).send(results.rows);
+      }
+  
+    } catch (err) {
+      response.status(500).send(err);
+      console.log(err);
+    }
+
+    // response.status(200).json(results.rows);
+    console.log(results);
+  });
+};
+
+
+
+
+
+
 
 //Get single user through id
-const getUserById = (request, response) => {
-  const id = parseInt(request.params.id);
+// const getUserById = (request, response) => {
+//   const id = parseInt(request.params.id);
 
-  client.query(
-    "SELECT * FROM sign_up WHERE id = $1",
-    [id],
-    (error, results) => {
-      if (error) {
-        throw error;
-      }
-      response.status(200).json(results.rows);
-      console.log(results.rows);
-    }
-  );
-};
+//   client.query(
+//     "SELECT * FROM sign_up WHERE id = $1",
+//     [id],
+//     (error, results) => {
+//       if (error) {
+//         throw error;
+//       }
+//       response.status(200).json(results.rows);
+//       console.log(results.rows);
+//     }
+//   );
+// };
 
 
 
@@ -143,11 +171,14 @@ const updateUser = (request, response) => {
     username,
     password,
     account_type,
+    bio
   } = request.body;
 
+  const File = request.file.filename;
+
   client.query(
-    `UPDATE sign_up SET firstname = $1, lastname = $2 , email = $3 , phone = $4 , username = $5 , password = $6 , account_type =$7 WHERE id = ${id}`,
-    [firstname, lastname, email, phone, username, password, account_type],
+    `UPDATE sign_up SET firstname = $1, lastname = $2 , email = $3 , phone = $4 , username = $5 , password = $6 , account_type =$7, bio=$8, profile=$9 WHERE id = ${id}`,
+    [firstname, lastname, email, phone, username, password, account_type, bio, File],
 
     (error, results) => {
       if (error) {
@@ -162,10 +193,11 @@ const updateUser = (request, response) => {
       console.log(phone);
       console.log(username);
       console.log(password);
+      console.log(account_type);
+      console.log(bio);
+      console.log(File);
     }
   );
-
-  // client.end();
 };
 
 
@@ -258,20 +290,79 @@ const UploadVideo = (request , res) => {
 
 
 
+//Send follow request
+const SendFollowRequest = (request , response) => {
+
+  const follower_id = request.body.userid;
+
+    const UserNameForRequest = request.body.username;
+
+    var requestId;
+
+    client.query(`SELECT * FROM sign_up WHERE username LIKE '%$1%'`,[UserNameForRequest],(error , results) => {
+        try{
+
+          requestId = results.rows[0].id;
+
+          //Query to send follow request
+          client.query(`INSERT INTO  following(follower_id, request_for_id, usernametofollow) VALUES($1,$2,$3)`,[follower_id, requestId, UserNameForRequest],() => {
+              console.log('you have starte following '+UserNameForRequest);
+              response.status(200).send('following started');
+              
+          });
+
+        } 
+        catch(error){
+            response.status(500).send(error);
+            console.log(error);
+        }
+    });
+}
 
 
+
+
+
+
+
+//Check your following list
+const ChechFollowingList = (request , response) => {
+  const UserId = request.params.userid;
+
+ client.query(`SELECT * FROM following WHERE follower_id = $1`,[UserId], (error , results) => {
+
+    try{
+        response.status(200).send(results.rows);
+        console.log(results.rows);
+    }
+    catch(error){
+      response.status(500).send(error);
+      console.log(error);
+    }
+
+  });
+}
+
+
+
+
+
+//Get database connection
 const GetClient = () => {
     return client;
 }
 
 module.exports = {
-  getUsers,
-  getUserById,
+  WelcomeRecommendation,
+  // getUserById,
   createUser,
   updateUser,
   deleteUser,
   UploadVideo,
   GetProfile,
   GetCompleteProfile,
-  GetClient
+  GetClient,
+  SearchUsers,
+  SendFollowRequest,
+  ChechFollowingList
 };

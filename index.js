@@ -6,10 +6,6 @@ const path = require("path");
 const port = process.env.PORT || 3000; //process.ENV file data
 const db = require("./routes"); //Routes file
 const Login = require("./login");
-
-const { GetClient } = require("./routes");
-const client = GetClient();
-
 const multer = require("multer");
 const { constants } = require("buffer");
 const req = require("express/lib/request");
@@ -35,7 +31,7 @@ app.set("view engine", "ejs");
 
 //video upload section
 const videoUpload = multer({
-  dest: "videos", // Destination to store video
+  // dest: "videos", // Destination to store video
 });
 
 //Api to upload videos
@@ -46,13 +42,13 @@ app.post("/upload/video/user/id/:id",videoUpload.single("videoUpload"),db.Upload
 );
 
 //Routes section
-app.get("/get/all/users", db.getUsers, () => {
+app.get("/search/all/users", db.WelcomeRecommendation,() => {
   res.type("json");
 });
 
-app.get("/user/with/id/:id", db.getUserById, () => {
-  res.type("json");
-});
+//("/user/with/id/:id", db.getUserById, () => {
+//   res.type("json");
+// });
 
 app.get("/get/profile/id/:id", db.GetProfile, () => {
   res.type("json");
@@ -79,6 +75,18 @@ const upload = multer({});
 app.post("/signup/user", upload.single("upload"), db.createUser, () => {
   res.type("json");
 });
+
+app.get('/search/with/username', db.SearchUsers,()=>{
+  res.type("json");
+})
+
+app.get('/send/follow/request' , db.SendFollowRequest,() => {
+  res.type('json');
+})
+
+app.get('/chech/following/list/userid/:userid',db.ChechFollowingList,()=>{
+  res.type('json');
+})
 //Routes section---------
 
 
